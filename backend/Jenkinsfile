@@ -13,21 +13,17 @@ pipeline{
 
     stages{
 
-         stage("Checkout code from git"){
+        stage("Checkout code from git"){
           steps{
             checkout scm
           }
         }
         
-        stage("Compile"){
+        stage("Build"){
           steps{
-            sh "mvn compile"
-          }
-        }
-
-        stage("Clean"){
-          steps{
-            sh "mvn clean package"
+            dir('backend') {
+              sh 'mvn clean package'
+            }
           }
         }
     }
