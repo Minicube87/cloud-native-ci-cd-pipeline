@@ -1,10 +1,43 @@
-pipeline {
+pipeline{
+
     agent any
-    stages {
-        stage("Build") {
-            steps {
-                echo "Building the application..."
-            }
+
+    parameters {
+    choice(name: 'ENVIRONMENT', choices: ['dev', 'prod'], description: 'Environment-Auswahl')
+    }
+
+
+    stages{
+
+         stage("Checkout code from git"){
+          steps{
+            checkout scm
+          }
+        }
+        
+        stage("Compile"){
+          steps{
+            sh "mvn compile"
+          }
+        }
+
+        stage("Clean"){
+          steps{
+            sh "mvn clean package"
+          }
+        }
+    }
+
+
+    post{
+        always{
+            echo "================"
+        }
+        success{
+            cleanWs()
+        }
+        failure{
+            echo "========pipeline execution failed========"
         }
     }
 }
