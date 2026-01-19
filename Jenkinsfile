@@ -4,16 +4,12 @@ pipeline{
 
     tools{
       maven 'Maven'
+      nodejs 'Node18'
     }
-
-    parameters {
-    choice(name: 'ENVIRONMENT', choices: ['dev', 'prod'], description: 'Environment-Auswahl')
-    }
-
 
     stages{
 
-        stage("Checkout code from git"){
+        stage("Checkout"){
           steps{
             checkout scm
           }
@@ -26,16 +22,23 @@ pipeline{
             }
           }
         }
+
+        stage("Frontend"){
+          steps{
+            dir('frontend') {
+              sh 'npm install'
+              sh 'npm run build'
+            }
+          }
+        }
     }
 
 
     post{
         always{
-           echo "HI"
-        }
-        success{
             cleanWs()
         }
+
         failure{
             echo "========pipeline execution failed========"
         }
