@@ -1,0 +1,11 @@
+{
+  "name": "kukuk-frontend",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "echo Building frontend...",
+    "test": "jest"
+  },
+  "devDependencies": {
+    "jest": "^29.0.0"
+  }
+}
