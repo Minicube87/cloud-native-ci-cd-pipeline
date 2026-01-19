@@ -2,6 +2,10 @@ pipeline{
 
     agent any
 
+    tools{
+      maven 'Maven'
+    }
+
     parameters {
     choice(name: 'ENVIRONMENT', choices: ['dev', 'prod'], description: 'Environment-Auswahl')
     }
