@@ -4,7 +4,7 @@ pipeline{
 
     tools{
       maven 'Maven'
-      nodejs 'Node18'
+      nodejs 'Node'
     }
 
     stages{
