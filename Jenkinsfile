@@ -15,7 +15,7 @@ pipeline{
           }
         }
         
-        stage("Build"){
+        stage("Build Backend"){
           steps{
             dir('backend') {
               sh 'mvn clean package'
@@ -23,11 +23,12 @@ pipeline{
           }
         }
 
-        stage("Frontend"){
+        stage("Build Frontend"){
           steps{
             dir('frontend') {
               sh 'npm install'
               sh 'npm run build'
+              sh 'npm test'
             }
           }
         }
