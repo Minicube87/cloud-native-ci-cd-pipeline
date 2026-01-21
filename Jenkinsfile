@@ -1,61 +1,71 @@
-pipeline{
-
+pipeline {
     agent any
 
-    tools{
-      maven 'Maven'
-      nodejs 'Node'
-      docker 'Docker'
+    tools {
+        maven 'Maven'
+        nodejs 'Node'
     }
 
-    stages{
-
-        stage("Checkout"){
-          steps{
-            checkout scm
-          }
-        }
-        
-        stage("Build Backend"){
-          steps{
-            dir('backend') {
-              sh 'mvn clean package'
+    stages {
+        stage("Checkout") {
+            steps {
+                checkout scm
             }
-          }
         }
 
-        stage("Build Frontend"){
-          steps{
-            dir('frontend') {
-              sh 'npm install'
-              sh 'npm run build'
-              sh 'npm test'
+        stage("Build Backend") {
+            steps {
+                dir('backend') {
+                    sh 'mvn clean package'
+                }
             }
-          }
         }
 
-        stage("Docker Build Backend"){
-          steps{
-            dir('backend') {
-              sh 'docker build -t kukuk-backend:latest .'
+        stage("Build Frontend") {
+            steps {
+                dir('frontend') {
+                    sh 'npm install'
+                    sh 'npm run build'
+                    sh 'npm test'
+                }
             }
-          }
         }
 
-       stage('Docker Push Backend') {
-          steps {
-            sh 'docker push minicube78/kukuk-backend:latest'
-          }
+        stage("Docker Build Backend") {
+            agent {
+                docker {
+                    image 'docker:24.0.7-cli'
+                    label 'kukuk-abschlussprojekt'
+                    args '-v /var/run/docker.sock:/var/run/docker.sock'
+                }
+            }
+            steps {
+                dir('backend') {
+                    sh 'docker build -t minicube78/kukuk-backend:latest .'
+                }
+            }
+        }
+
+        stage("Docker Push Backend") {
+            agent {
+                docker {
+                    image 'docker:24.0.7-cli'
+                    label 'kukuk-abschlussprojekt'
+                    args '-v /var/run/docker.sock:/var/run/docker.sock'
+                }
+            }
+            steps {
+                sh 'docker push minicube78/kukuk-backend:latest'
+            }
         }
     }
 
-
-    post{
-        always{
+    post {
+        always {
             cleanWs()
         }
 
-        failure{
+        failure {
             echo "========pipeline execution failed========"
         }
     }
