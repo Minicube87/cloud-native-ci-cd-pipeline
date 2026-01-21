@@ -35,7 +35,6 @@ pipeline {
             agent {
                 docker {
                     image 'docker:24.0.7-cli'
-                    label 'kukuk-abschlussprojekt'
                     args '-v /var/run/docker.sock:/var/run/docker.sock'
                 }
             }
@@ -50,7 +49,6 @@ pipeline {
             agent {
                 docker {
                     image 'docker:24.0.7-cli'
-                    label 'kukuk-abschlussprojekt'
                     args '-v /var/run/docker.sock:/var/run/docker.sock'
                 }
             }
