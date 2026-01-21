@@ -1,0 +1,67 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+
+env:
+  FRONTEND_IMAGE: minicube78/kukuk-frontend
+  BACKEND_IMAGE: minicube78/kukuk-backend
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Maven Java Setup
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Maven Node Setup
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Backend Build
+        run: mvn clean package
+        working-directory: backend
+
+      - name: NPM install
+        run: npm install
+        working-directory: frontend
+
+      - name: npm run build
+        run: npm run build
+        working-directory: frontend
+
+      - name: npm test
+        run: npm test
+        working-directory: frontend
+
+  push-docker:
+    name: Push to Docker Registry and build Docker Images
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Docker login
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKER_PASS }}
+
+      - name: Docker build and tag
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          push: true
+          tags: minicube78/kukuk-backend:latest
