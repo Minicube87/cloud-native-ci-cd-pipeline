@@ -32,6 +32,20 @@ pipeline{
             }
           }
         }
+
+        stage("Docker Build Backend"){
+          steps{
+            dir('backend') {
+              sh 'docker build -t kukuk-backend:latest .'
+            }
+          }
+        }
+
+       stage('Docker Push Backend') {
+          steps {
+            sh 'docker push minicube78/kukuk-backend:latest'
+          }
+        }
     }
 
 
