@@ -32,6 +32,12 @@ jobs:
         run: mvn clean package
         working-directory: backend
 
+      - name: Upload artefact for push docker job
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-jar
+          path: backend/target/*.jar
+
       - name: NPM install
         run: npm install
         working-directory: frontend
@@ -52,6 +58,12 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Download Artefact from build
+        uses: actions/download-artifact@v4
+        with:
+          name: backend-jar
+          path: backend/target
 
       - name: Docker login
         uses: docker/login-action@v3
