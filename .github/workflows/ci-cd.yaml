@@ -71,9 +71,16 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKER_PASS }}
 
-      - name: Docker build and tag
+      - name: Docker build and tag (backend)
         uses: docker/build-push-action@v5
         with:
           context: ./backend
           push: true
           tags: minicube78/kukuk-backend:latest
+
+      - name: Docker build and tag (frontend)
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          push: true
+          tags: minicube78/kukuk-frontend:latest
