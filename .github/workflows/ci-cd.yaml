@@ -84,3 +84,66 @@ jobs:
           context: ./frontend
           push: true
           tags: minicube78/kukuk-frontend:latest
+
+  deploy-dev:
+    name: Deploy Dev
+    runs-on: ubuntu-latest
+    needs: push-docker
+    environment: dev
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v4
+        with:
+          version: v1.29.0
+
+      - name: Configure kubeconfig
+        run: |
+          mkdir -p "$HOME/.kube"
+          if echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > "$HOME/.kube/config" 2>/dev/null; then
+            echo "kubeconfig decoded from base64"
+          else
+            echo "${{ secrets.KUBE_CONFIG }}" > "$HOME/.kube/config"
+          fi
+
+      - name: Apply manifests (dev)
+        run: kubectl apply -n jan-dev -f k8s/dev
+
+  manual-approval:
+    name: Manual Approval
+    runs-on: ubuntu-latest
+    needs: deploy-dev
+    environment: prod
+
+    steps:
+      - name: Await approval
+        run: echo "Approve this job to deploy to prod."
+
+  deploy-prod:
+    name: Deploy Prod
+    runs-on: ubuntu-latest
+    needs: manual-approval
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v4
+        with:
+          version: v1.29.0
+
+      - name: Configure kubeconfig
+        run: |
+          mkdir -p "$HOME/.kube"
+          if echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > "$HOME/.kube/config" 2>/dev/null; then
+            echo "kubeconfig decoded from base64"
+          else
+            echo "${{ secrets.KUBE_CONFIG }}" > "$HOME/.kube/config"
+          fi
+
+      - name: Apply manifests (prod)
+        run: kubectl apply -n jan-prod -f k8s/prod
