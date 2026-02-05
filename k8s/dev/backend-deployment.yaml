@@ -8,17 +8,19 @@ spec:
   selector:
     matchLabels:
       app: backend
+      env: dev
   template:
     metadata:
       labels:
         app: backend
+        env: dev
     spec:
       containers:
       - name: backend
         image: minicube78/kukuk-backend:latest
         imagePullPolicy: Always
         ports:
-        - containerPort: 8080
+        - containerPort: 8081
         env:
         - name: SPRING_PROFILES_ACTIVE
           value: dev

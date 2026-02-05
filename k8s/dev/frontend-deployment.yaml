@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-dev
+  namespace: jan-dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+      env: dev
+  template:
+    metadata:
+      labels:
+        app: frontend
+        env: dev
+    spec:
+      containers:
+      - name: frontend
+        image: minicube78/kukuk-frontend:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
